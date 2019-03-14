@@ -23,6 +23,7 @@ char *_prog_name = NULL;
 int _option_force_encode_all_chars = 0; // 1 force encode all characters, 0 for partly.
 char *_option_encode_format = NULL; // encoding format type
 char *_input_str = NULL; // string to encode
+int _is_input_str_from_pipe = 0;
 
 int parse_options(int argc, char **argv)
 {
@@ -56,9 +57,12 @@ int parse_options(int argc, char **argv)
 	   	}
 	}
 
-	for (index = optind; index < argc; index++) {
-		// Non-option argument
-		_input_str = argv[index];
+	// if no stdin read from pipe
+	if (_is_input_str_from_pipe == 0) {
+		for (index = optind; index < argc; index++) {
+			// Non-option argument
+			_input_str = argv[index];
+		}
 	}
 
 	return 1;
@@ -133,6 +137,24 @@ void print_usage()
 
 int main(int argc, char **argv)
 {
+	// check stdin pipe
+	if (!isatty(fileno(stdin))) {
+		int i = 0;
+		char buf[10240];
+
+		// read all data from stdin
+		while ((buf[i++] = getchar()) != EOF);
+
+		// end string with null byte
+		buf[i-1] = '\0';
+
+		// copy char array to char pointer
+		_input_str = malloc(strlen(buf) + 1);
+		strcpy(_input_str, buf);
+
+		_is_input_str_from_pipe = 1;
+	}
+
 	_prog_name = argv[0];
 
 	// parse options
