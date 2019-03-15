@@ -117,13 +117,17 @@ void print_usage()
 	printf("This project is licensed under the terms of the MIT license.\n");
 	printf("\n");
 
-	printf("Usage: %s input_string -e encode_format [-f]\n", _prog_name);
+	printf("Usage:\n");
+	printf("    $ %s input_string -e encode_format [-f]\n", _prog_name);
+	printf(" Or\n");
+	printf("    $ printf input_string | %s -e encode_format [-f]\n", _prog_name);
 	printf("\n");
 
-	printf(" -e (required) = format to encode:\n");
-	printf("    * [ c_backslash ] => \\x48\\x65\\x6C\\x6C\\x6F\\x20\\x57\\x6F\\x72\\x6C\\x64\\x21\n");
-	printf("    * [ percent_encode ] => Hello%%20World%%21\n");
-	printf("    * [ double_percent_encode ] => Hello%%2520World%%2521\n");
+	printf("Options:\n");
+	printf(" -e (required) = encode format.\n");
+	printf("    - c_backslash => \\x48\\x65\\x6C\\x6C\\x6F\\x20\\x57\\x6F\\x72\\x6C\\x64\\x21\n");
+	printf("    - percent_encode => Hello%%20World%%21\n");
+	printf("    - double_percent_encode => Hello%%2520World%%2521\n");
 	printf("\n");
 
 	printf(" -f (optional) = force encode all characters.\n");
