@@ -17,10 +17,12 @@ typedef enum
 } encode_format_t;
 
 char *_prog_name = NULL;
+char *_prog_version = "0.1.0";
 
 // https://www.gnu.org/software/libc/manual/html_node/Example-of-Getopt.html
 // https://www.gnu.org/software/libc/manual/html_node/Using-Getopt.html#Using-Getopt
 int _option_force_encode_all_chars = 0; // 1 force encode all characters, 0 for partly.
+int _option_print_version = 0;
 char *_option_encode_format = NULL; // encoding format type
 char *_input_str = NULL; // string to encode
 int _is_input_str_from_pipe = 0;
@@ -34,27 +36,30 @@ int parse_options(int argc, char **argv)
 	// <char> = just a flag (no param).
 	// <char>: = param is required.
 	// <char>:: = param is optional.
-	while ((c = getopt(argc, argv, "fe:")) != -1) {
+	while ((c = getopt(argc, argv, "vfe:")) != -1) {
 		switch (c) {
-	   		case 'f':
+			case 'v':
+				_option_print_version = 1;
+				break;
+			case 'f':
 				_option_force_encode_all_chars = 1;
 				break;
-	   		case 'e':
-		 		_option_encode_format = optarg;
-		 		break;
-	   		case '?':
-		 		if (optopt == 'e')
-		   			fprintf(stderr, "Option -%c requires an argument.\n", optopt);
-		 		else if (isprint(optopt))
+			case 'e':
+				_option_encode_format = optarg;
+				break;
+			case '?':
+				if (optopt == 'e')
+					fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+				else if (isprint(optopt))
 					// other printable character
-		   			fprintf(stderr, "Unknown option `-%c'.\n", optopt);
-		 		else
+					fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+				else
 					// non-printable character
-		   			fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
-		 		return 0;
-	   		default:
-		 		return 0;
-	   	}
+					fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+				return 0;
+			default:
+				return 0;
+		}
 	}
 
 	// if no stdin read from pipe
@@ -112,7 +117,7 @@ void encode_string(char *str, size_t str_len, encode_format_t encode_format)
 
 void print_usage()
 {
-	printf("PXI-ENCODE - This program is a simple string encoder\n");
+	printf("PXI-ENCODE (v%s) - This program is a simple string encoder\n", _prog_version);
 	printf("(c) Copyright 2019, Pongsakorn Ritrugsa <poundxi@protonmail.com>\n");
 	printf("This project is licensed under the terms of the MIT license.\n");
 	printf("\n");
@@ -124,13 +129,16 @@ void print_usage()
 	printf("\n");
 
 	printf("Options:\n");
-	printf(" -e (required) = encode format.\n");
-	printf("    - c_backslash => \\x48\\x65\\x6C\\x6C\\x6F\\x20\\x57\\x6F\\x72\\x6C\\x64\\x21\n");
-	printf("    - percent_encode => Hello%%20World%%21\n");
-	printf("    - double_percent_encode => Hello%%2520World%%2521\n");
+	printf("   -v   print program version\n");
 	printf("\n");
 
-	printf(" -f (optional) = force encode all characters.\n");
+	printf("   -e   (required) encode format\n");
+	printf("        - c_backslash => \\x48\\x65\\x6C\\x6C\\x6F\\x20\\x57\\x6F\\x72\\x6C\\x64\\x21\n");
+	printf("        - percent_encode => Hello%%20World%%21\n");
+	printf("        - double_percent_encode => Hello%%2520World%%2521\n");
+	printf("\n");
+
+	printf("   -f   (optional) force encode all characters\n");
 	printf("\n");
 
 	printf("Examples:\n");
@@ -164,6 +172,11 @@ int main(int argc, char **argv)
 	// parse options
 	if (parse_options(argc, argv) == 0) {
 		exit(1);
+	}
+
+	if (_option_print_version == 1) {
+		printf("v%s\n", _prog_version);
+		exit(0);
 	}
 
 	// input string

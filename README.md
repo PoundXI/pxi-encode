@@ -15,11 +15,13 @@ Or
 $ printf input_string | **./pxi-encode** -e encode_format [ -f ]
 
 ### Options
-- **-e (required) = encode format.**
+- **-v   print program version**
 
-  - { c_backslash, percent_encode, double_percent_encode }
+- **-e   (required) = encode format**
 
-- **-f (optional) = force encode all characters.**
+      - { c_backslash, percent_encode, double_percent_encode }
+
+- **-f   (optional) force encode all characters**
 
 ### Examples
 $ ./pxi-encode "Hello World" -e c_backslash
